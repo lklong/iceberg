@@ -70,6 +70,11 @@ public interface FileIO extends Serializable, Closeable {
   }
 
   /**
+   * Delete the directory at the given path.
+   */
+  void deleteDirectory(String directory);
+
+  /**
    * Initialize File IO from catalog properties.
    *
    * @param properties catalog properties

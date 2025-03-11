@@ -95,6 +95,16 @@ public class HadoopFileIO implements FileIO, HadoopConfigurable, SupportsPrefixO
   }
 
   @Override
+  public void deleteDirectory(String directory) {
+    Path toDelete = new Path(directory);
+    FileSystem fs = Util.getFs(toDelete, hadoopConf.get());
+    try {
+      fs.delete(toDelete, true /* recursive */);
+    } catch (IOException e) {
+      throw new RuntimeIOException(e, "Failed to delete directory: %s", directory);
+    }
+  }
+  @Override
   public Map<String, String> properties() {
     return properties.immutableMap();
   }
