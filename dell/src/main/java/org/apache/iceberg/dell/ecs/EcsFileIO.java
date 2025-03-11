@@ -70,6 +70,9 @@ public class EcsFileIO implements FileIO {
     client().deleteObject(uri.bucket(), uri.name());
   }
 
+  @Override
+  public void deleteDirectory(String directory) {}
+
   private S3Client client() {
     if (client == null) {
       synchronized (this) {

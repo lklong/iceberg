@@ -341,10 +341,7 @@ public class TestCatalogUtil {
     }
 
     @Override
-    public void deleteDirectory(String directory) {
-
-    }
-
+    public void deleteDirectory(String directory) {}
   }
 
   public static class TestFileIONoArg implements FileIO {
@@ -376,10 +373,7 @@ public class TestCatalogUtil {
     }
 
     @Override
-    public void deleteDirectory(String directory) {
-
-    }
-
+    public void deleteDirectory(String directory) {}
   }
 
   public static class TestFileIOBadArg implements FileIO {
@@ -408,9 +402,7 @@ public class TestCatalogUtil {
     }
 
     @Override
-    public void deleteDirectory(String directory) {
-
-    }
+    public void deleteDirectory(String directory) {}
   }
 
   public static class TestFileIONotImpl {

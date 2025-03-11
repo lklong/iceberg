@@ -69,10 +69,8 @@ public interface FileIO extends Serializable, Closeable {
         String.format("%s does not expose configuration properties", this.getClass().toString()));
   }
 
-  /**
-   * Delete the directory at the given path.
-   */
-  void deleteDirectory(String directory);
+  /** Delete the directory at the given path. */
+  default void deleteDirectory(String directory) {};
 
   /**
    * Initialize File IO from catalog properties.

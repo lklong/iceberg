@@ -97,6 +97,7 @@ public class HadoopFileIO implements FileIO, HadoopConfigurable, SupportsPrefixO
       throw new RuntimeIOException(e, "Failed to delete directory: %s", directory);
     }
   }
+
   @Override
   public Map<String, String> properties() {
     return ImmutableMap.of();

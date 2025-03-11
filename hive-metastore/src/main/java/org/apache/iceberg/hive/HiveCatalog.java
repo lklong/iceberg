@@ -18,6 +18,9 @@
  */
 package org.apache.iceberg.hive;
 
+import static org.apache.iceberg.TableProperties.TABLE_DROP_BASE_PATH_ENABLED;
+import static org.apache.iceberg.TableProperties.TABLE_DROP_BASE_PATH_ENABLED_DEFAULT;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,9 +65,6 @@ import org.apache.iceberg.util.LocationUtil;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.iceberg.TableProperties.TABLE_DROP_BASE_PATH_ENABLED;
-import static org.apache.iceberg.TableProperties.TABLE_DROP_BASE_PATH_ENABLED_DEFAULT;
 
 public class HiveCatalog extends BaseMetastoreCatalog implements SupportsNamespaces, Configurable {
   public static final String LIST_ALL_TABLES = "list-all-tables";
@@ -202,8 +202,9 @@ public class HiveCatalog extends BaseMetastoreCatalog implements SupportsNamespa
       if (purge && lastMetadata != null) {
         CatalogUtil.dropTableData(ops.io(), lastMetadata);
 
-        boolean dropTableBasePath = lastMetadata.propertyAsBoolean(TABLE_DROP_BASE_PATH_ENABLED,
-                TABLE_DROP_BASE_PATH_ENABLED_DEFAULT);
+        boolean dropTableBasePath =
+            lastMetadata.propertyAsBoolean(
+                TABLE_DROP_BASE_PATH_ENABLED, TABLE_DROP_BASE_PATH_ENABLED_DEFAULT);
         if (dropTableBasePath) {
           CatalogUtil.dropTableBaseLocation(ops.io(), lastMetadata.location());
         }

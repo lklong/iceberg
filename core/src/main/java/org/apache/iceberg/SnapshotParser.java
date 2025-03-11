@@ -232,5 +232,8 @@ public class SnapshotParser {
     public void deleteFile(String path) {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void deleteDirectory(String directory) {}
   }
 }

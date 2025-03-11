@@ -20,6 +20,7 @@ package org.apache.iceberg.spark.source;
 
 import java.io.File;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
 import org.apache.iceberg.BaseTable;
 import org.apache.iceberg.Files;
 import org.apache.iceberg.LocationProviders;

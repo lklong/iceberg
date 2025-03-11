@@ -81,6 +81,9 @@ public class ResolvingFileIO implements FileIO, HadoopConfigurable {
   }
 
   @Override
+  public void deleteDirectory(String directory) {}
+
+  @Override
   public void initialize(Map<String, String> newProperties) {
     close(); // close and discard any existing FileIO instances
     this.properties = SerializableMap.copyOf(newProperties);
