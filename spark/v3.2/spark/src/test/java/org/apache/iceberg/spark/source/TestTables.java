@@ -201,5 +201,14 @@ class TestTables {
         throw new RuntimeIOException("Failed to delete file: " + path);
       }
     }
+
+    @Override
+    public void deleteDirectory(String directory) {
+      try {
+        FileUtils.deleteDirectory(new File(directory));
+      } catch (Exception e) {
+        throw new RuntimeIOException("Failed to delete directory: " + directory);
+      }
+    }
   }
 }

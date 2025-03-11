@@ -32,10 +32,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.iceberg.AssertHelpers;
@@ -65,6 +68,7 @@ import org.apache.iceberg.exceptions.AlreadyExistsException;
 import org.apache.iceberg.exceptions.NamespaceNotEmptyException;
 import org.apache.iceberg.exceptions.NoSuchNamespaceException;
 import org.apache.iceberg.exceptions.NoSuchTableException;
+import org.apache.iceberg.hadoop.Util;
 import org.apache.iceberg.relocated.com.google.common.collect.ImmutableMap;
 import org.apache.iceberg.relocated.com.google.common.collect.ImmutableSet;
 import org.apache.iceberg.relocated.com.google.common.collect.Maps;
@@ -78,6 +82,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.rules.TemporaryFolder;
+
+import static org.apache.iceberg.TableProperties.TABLE_DROP_BASE_PATH_ENABLED;
 
 public class TestHiveCatalog extends HiveMetastoreTest {
   private static ImmutableMap meta =
@@ -474,6 +480,56 @@ public class TestHiveCatalog extends HiveMetastoreTest {
     assertThatThrownBy(() -> catalog.loadTable(identifier))
         .isInstanceOf(NoSuchTableException.class)
         .hasMessageContaining("Table does not exist:");
+  }
+  @Test
+  public void testDropTableAndDirectories() throws TException, IOException {
+    Namespace namespace = Namespace.of("dbname_drop");
+    TableIdentifier identifier = TableIdentifier.of(namespace, "table");
+    Schema schema = new Schema(Types.StructType.of(
+            required(1, "id", Types.LongType.get())).fields());
+
+    catalog.createNamespace(namespace, meta);
+    Map<String, String> properties = Maps.newHashMap();
+    properties.put(TABLE_DROP_BASE_PATH_ENABLED, "true");
+    Table table = catalog.createTable(identifier, schema, PartitionSpec.unpartitioned(), null, properties);
+    Map<String, String> nameMata = catalog.loadNamespaceMetadata(namespace);
+    Assert.assertEquals("apache", nameMata.get("owner"));
+    Assert.assertEquals("iceberg", nameMata.get("group"));
+
+    String location = table.location();
+    Assert.assertTrue(catalog.dropTable(identifier, true));
+
+    Configuration conf = new Configuration();
+    FileSystem fs = Util.getFs(new Path(location), conf);
+    Assert.assertFalse(fs.isDirectory(new Path(location)));
+
+    Assert.assertTrue("Should fail to drop namespace if it is not empty",
+            catalog.dropNamespace(namespace));
+  }
+
+  @Test
+  public void testDropTableAndNotDropDirectories() throws TException, IOException {
+    Namespace namespace = Namespace.of("dbname_drop");
+    TableIdentifier identifier = TableIdentifier.of(namespace, "table");
+    Schema schema = new Schema(Types.StructType.of(
+            required(1, "id", Types.LongType.get())).fields());
+
+    catalog.createNamespace(namespace, meta);
+    Table table = catalog.createTable(identifier, schema);
+    Map<String, String> nameMata = catalog.loadNamespaceMetadata(namespace);
+    Assert.assertEquals("apache", nameMata.get("owner"));
+    Assert.assertEquals("iceberg", nameMata.get("group"));
+
+    String location = table.location();
+    Assert.assertTrue(catalog.dropTable(identifier, true));
+
+    Configuration conf = new Configuration();
+    FileSystem fs = Util.getFs(new Path(location), conf);
+    // location not delete.
+    Assert.assertTrue(fs.isDirectory(new Path(location)));
+
+    Assert.assertTrue("Should fail to drop namespace if it is not empty",
+            catalog.dropNamespace(namespace));
   }
 
   @Test

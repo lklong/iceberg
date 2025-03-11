@@ -339,6 +339,12 @@ public class TestCatalogUtil {
     public Configuration getConfiguration() {
       return configuration;
     }
+
+    @Override
+    public void deleteDirectory(String directory) {
+
+    }
+
   }
 
   public static class TestFileIONoArg implements FileIO {
@@ -368,6 +374,12 @@ public class TestCatalogUtil {
     public void initialize(Map<String, String> properties) {
       map = properties;
     }
+
+    @Override
+    public void deleteDirectory(String directory) {
+
+    }
+
   }
 
   public static class TestFileIOBadArg implements FileIO {
@@ -393,6 +405,11 @@ public class TestCatalogUtil {
 
     public String getArg() {
       return arg;
+    }
+
+    @Override
+    public void deleteDirectory(String directory) {
+
     }
   }
 
